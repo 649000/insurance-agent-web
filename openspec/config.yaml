@@ -2,7 +2,7 @@ schema: spec-driven
 
 context: |
   Project: Insurance Portfolio Tracker for Singapore families (insurance-agent-web)
-  Stack: Turborepo + pnpm, Next.js (App Router, Client-facing BaaS ONLY, NO /app/api routes), Supabase PostgreSQL with RLS, Firebase Auth (Client SDK with 2FA), Firebase Functions (Python with uv & Pydantic v2).
+  Stack: Turborepo + pnpm (Node.js 24+), Next.js 16 (App Router, Client-facing BaaS ONLY, NO /app/api routes), Tailwind CSS v4, Zod v4, Supabase PostgreSQL 15/17 with RLS, Firebase Auth (Client SDK v13+ with 2FA), Firebase Functions (Python 3.13 with uv & Pydantic v2).
   Strict Directives:
   - NO NRIC/FIN collection: Under Singapore PDPA, never collect, store, or display NRIC/FIN numbers.
   - NO Next.js API routes or route handlers: Reads via Supabase client + RLS, mutations via Python Firebase Functions.

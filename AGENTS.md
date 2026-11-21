@@ -38,15 +38,15 @@ Always use the **LTS (Long-Term Support)** or stable production release of all l
 
 | Tier | Technology | Notes / Constraints |
 | :--- | :--- | :--- |
-| **Monorepo Manager** | Turborepo + `pnpm` (Node.js 20+ LTS) | Manages dependencies, build caching, and pipelines |
-| **Python Environment**| `uv` (Python 3.11 / 3.12 LTS) | Ultra-fast virtualenv and lockfile management |
-| **Frontend** | Next.js (LTS, App Router), React LTS | Static / Client-Side Rendering with BaaS |
-| **Styling & UI** | Tailwind CSS + `shadcn/ui` + Lucide Icons | Accessible, headless, composable design system |
-| **Authentication** | Firebase Auth (Client SDK) | Email/Password, Google Sign-In, Mandatory 2FA |
+| **Monorepo Manager** | Turborepo + `pnpm` (Node.js 24+ LTS) | Manages dependencies, build caching, and pipelines |
+| **Python Environment**| `uv` (Python 3.13 LTS / Firebase Runtime) | Ultra-fast virtualenv and lockfile management |
+| **Frontend** | Next.js 16 (App Router), React 19 | Static / Client-Side Rendering with BaaS |
+| **Styling & UI** | Tailwind CSS v4 + `shadcn/ui` + Lucide Icons | Accessible, headless, composable design system with CSS-first theme tokens |
+| **Authentication** | Firebase Auth (Client SDK v13+) | Email/Password, Google Sign-In, Mandatory 2FA |
 | **Object Storage** | Firebase Storage (GCS) | Secure policy document uploads (governed by OpenSpec) |
-| **Primary Database** | Supabase PostgreSQL 15+ | Accessed via Supabase Client + Postgres RLS |
-| **Serverless Backend**| Firebase Cloud Functions (Python runtime) | Firebase Callable Functions (`on_call`) |
-| **Schema Validation** | `zod` (TypeScript), `pydantic` v2 (Python) | Runtime validation at all system boundaries |
+| **Primary Database** | Supabase PostgreSQL 15 / 17 | Accessed via Supabase Client + Postgres RLS |
+| **Serverless Backend**| Firebase Cloud Functions (Python 3.13) | Firebase Callable Functions (`on_call`, `min_instances=0`) |
+| **Schema Validation** | `zod` v4 (TypeScript), `pydantic` v2 (Python) | Runtime validation at all system boundaries |
 | **Testing** | Vitest + React Testing Library + Playwright + Pytest | Offline, zero-cloud dependency |
 | **CI/CD & Security** | GitHub Actions + CodeQL + Semgrep + OWASP ZAP | Automated testing, SAST, DAST, & DB migrations |
 
@@ -92,7 +92,7 @@ Agents must use standard enums reflecting the Singapore market:
 │       ├── deploy-dev.yml         # Dev deployment & migration apply
 │       └── deploy-prod.yml        # Prod deployment (environment gated)
 ├── apps/
-│   └── web/                       # Next.js LTS + shadcn/ui + Tailwind CSS
+│   └── web/                       # Next.js 16 (App Router) + shadcn/ui + Tailwind CSS v4
 │       ├── src/
 │       │   ├── app/               # App Router pages (NO api/ routes!)
 │       │   ├── components/ui/     # shadcn/ui reusable primitives
