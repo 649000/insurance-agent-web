@@ -335,6 +335,18 @@
     "ast_hash": "439c73b75e4b9dab50c7ca0eccc84aa9",
     "semantic_hash": ""
   },
+  "supabase/migrations/20261122000000_init_schema.sql": {
+    "mtime": 1795281092.033416,
+    "seen": 1795282929.055753,
+    "ast_hash": "e5f48722182237536585b23b0062930e",
+    "semantic_hash": ""
+  },
+  "supabase/seed.sql": {
+    "mtime": 1795280352.9922988,
+    "seen": 1795282929.055754,
+    "ast_hash": "ed4df044fc13f0f31c693a304e4eb762",
+    "semantic_hash": ""
+  },
   "pnpm-lock.yaml": {
     "mtime": 1795282068.8028133,
     "seen": 1795282866.188853,

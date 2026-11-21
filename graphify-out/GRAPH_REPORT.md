@@ -6,12 +6,12 @@
 - Unclassified: 9 file(s) not represented in the graph (top: (none) 5, .example 1, .css 1)
 
 ## Summary
-- 386 nodes · 454 edges · 43 communities (21 shown, 22 thin omitted)
+- 396 nodes · 468 edges · 40 communities (20 shown, 20 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 6 edges (avg confidence: 0.95)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `2bbf3be3`
+- Built from commit: `fafbfbfe`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -25,7 +25,7 @@
 - compilerOptions
 - compilerOptions
 - web/package.json
-- devDependencies
+- 20261122000000_init_schema.sql
 - tasks
 - shared/package.json
 - openspec-explore/SKILL.md
@@ -36,27 +36,23 @@
 - firebase.ts
 - layout.tsx
 - scripts
-- vitest
-- @supabase/supabase-js
 - next.config.mjs
-- @testing-library/jest-dom
 - web/AGENTS.md
-- @types/node@^24.0.0
 - pnpm-workspace.yaml
 - README.md
 - insurance-agent-functions
 
 ## God Nodes (most connected - your core abstractions)
 1. `compilerOptions` - 18 edges
-2. `compilerOptions` - 17 edges
-3. `AGENTS.md — Engineering & AI Agent Operating Manual` - 17 edges
+2. `AGENTS.md — Engineering & AI Agent Operating Manual` - 17 edges
+3. `compilerOptions` - 17 edges
 4. `cn()` - 12 edges
 5. `calculate_coverage_gap()` - 10 edges
 6. `HomePage()` - 9 edges
 7. `scripts` - 8 edges
-8. `scripts` - 7 edges
-9. `tasks` - 7 edges
-10. `8. Coding Principles & Style Guide` - 7 edges
+8. `tasks` - 7 edges
+9. `8. Coding Principles & Style Guide` - 7 edges
+10. `scripts` - 7 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `8.6 Naming Conventions & Code Style` --references--> `calculate_coverage_gap()`  [INFERRED]
@@ -73,7 +69,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (43 total, 22 thin omitted)
+## Communities (40 total, 20 thin omitted)
 
 ### Community 0 - "policy.ts"
 Cohesion: 0.06
@@ -108,12 +104,12 @@ Cohesion: 0.10
 Nodes (19): compilerOptions, declaration, declarationMap, esModuleInterop, module, moduleResolution, noFallthroughCasesInSwitch, noImplicitAny (+11 more)
 
 ### Community 8 - "web/package.json"
-Cohesion: 0.15
-Nodes (18): dependencies, clsx@^2.1.1, @insurance-agent/config@workspace:*, @insurance-agent/shared@workspace:*, lucide-react@^1.77.0, react-dom@^19.0.0, tailwind-merge@^3.7.1, zod@^4.6.7 (+10 more)
+Cohesion: 0.06
+Nodes (45): dependencies, clsx@^2.1.1, @insurance-agent/config@workspace:*, @insurance-agent/shared@workspace:*, lucide-react@^1.77.0, react-dom@^19.0.0, @supabase/supabase-js@^2.47.10, tailwind-merge@^3.7.1 (+37 more)
 
-### Community 9 - "devDependencies"
-Cohesion: 0.12
-Nodes (17): devDependencies, jsdom@^25.0.1, postcss@^8.4.49, tailwindcss@^4.3.5, @tailwindcss/postcss@^4.3.5, @testing-library/react@^16.1.0, @types/react@^19.0.0, @types/react-dom@^19.0.0 (+9 more)
+### Community 9 - "20261122000000_init_schema.sql"
+Cohesion: 0.39
+Nodes (7): idx_policies_category, idx_policies_profile_id, idx_policies_user_id, idx_profiles_parent_id, idx_profiles_user_id, public.policies, public.profiles
 
 ### Community 10 - "tasks"
 Cohesion: 0.12
@@ -155,29 +151,25 @@ Nodes (4): next@^16.4.6, metadata, viewport, next
 Cohesion: 0.29
 Nodes (7): scripts, build, dev, lint, start, test, typecheck
 
-### Community 20 - "vitest"
-Cohesion: 0.33
-Nodes (4): @vitejs/plugin-react@^4.3.4, vitest@^2.1.8, @vitejs/plugin-react, vitest
-
 ## Knowledge Gaps
 - **1 isolated node(s):** `insurance-agent-functions`
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 220 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **22 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 222 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **20 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `vitest` connect `vitest` to `web/package.json`, `policy.ts`, `page.tsx`?**
-  _High betweenness centrality (0.140) - this node is a cross-community bridge._
+- **Why does `vitest` connect `web/package.json` to `policy.ts`, `page.tsx`?**
+  _High betweenness centrality (0.133) - this node is a cross-community bridge._
 - **What connects `insurance-agent-functions` to the rest of the system?**
   _1 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `policy.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.06155632984901278 - nodes in this community are weakly interconnected._
 - **Why does `AGENTS.md — Engineering & AI Agent Operating Manual` connect `AGENTS.md — Engineering & AI Agent Operating Manual` to `policy.ts`, `8. Coding Principles & Style Guide`?**
-  _High betweenness centrality (0.080) - this node is a cross-community bridge._
+  _High betweenness centrality (0.076) - this node is a cross-community bridge._
 - **Should `AGENTS.md — Engineering & AI Agent Operating Manual` be split into smaller, more focused modules?**
   _Cohesion score 0.06896551724137931 - nodes in this community are weakly interconnected._
 - **Why does `8.6 Naming Conventions & Code Style` connect `8. Coding Principles & Style Guide` to `calculate_coverage_gap`?**
-  _High betweenness centrality (0.079) - this node is a cross-community bridge._
+  _High betweenness centrality (0.075) - this node is a cross-community bridge._
 - **Should `calculate_coverage_gap` be split into smaller, more focused modules?**
   _Cohesion score 0.11375661375661375 - nodes in this community are weakly interconnected._
