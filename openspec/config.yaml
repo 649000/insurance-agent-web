@@ -9,6 +9,7 @@ context: |
   - Mobile-First design: Touch targets, responsive layout, zero horizontal scroll.
   - Hermetic testing: Zero live cloud in automated tests (local Supabase Docker + Firebase emulators).
   - Standard SG Insurance taxonomy: LIFE, HEALTH, CRITICAL_ILLNESS, DISABILITY, PERSONAL_ACCIDENT, SAVINGS_ENDOWMENT, INVESTMENT_LINKED. Insurers: AIA, Great Eastern, Prudential, Singlife, Income Insurance, Manulife, HSBC Life, FWD, Tokio Marine, Raffles Health, etc.
+  - Singapore Locale & Format: British English (en-SG), Day-first dates (DD/MM/YYYY), SGD currency (S$), SGT timezone (Asia/Singapore, UTC+8). Use standard formatters from @insurance-agent/shared.
 
 rules:
   proposal:

@@ -80,6 +80,26 @@ Agents must use standard enums reflecting the Singapore market:
 * Child profile records are strictly owned by the parent account: `parent_id = auth.jwt() ->> 'sub'`.
 * Supabase Row Level Security (RLS) must guarantee that no user can read or write policies or profiles belonging to another family.
 
+### 3.4 Singapore Locale, Language & Formatting Conventions
+All user-facing copy, data processing, formatting, and database timestamps must adhere to Singapore national and industry standards:
+* **Language & Spelling**:
+  - **British English (`en-SG` / `en-GB`)**: Use standard British/Singapore English spelling for all UI labels, user messaging, error texts, schema descriptions, and code comments.
+  - Examples: *analyse* (not *analyze*), *authorise* (not *authorize*), *centre* (not *center*), *programme* (not *program*), *modelling* (not *modeling*), *colour* (not *color*).
+  - Use standard Singapore insurance terminology: *sum assured* (not "face value" or "coverage amount"), *claim limit*, *premiums payable*, *beneficiaries*, *rider*.
+* **Date & Time Standards**:
+  - **Storage**: ISO 8601 (`YYYY-MM-DD` for policy dates, UTC ISO string for timestamps).
+  - **UI Display**: Strictly Day-First (`DD/MM/YYYY`, e.g., `22/11/2026`) or readable long format (`DD MMM YYYY`, e.g., `22 Nov 2026`).
+  - **Forbidden**: Never display American month-first format (`MM/DD/YYYY`).
+  - **Timezone**: Singapore Standard Time (`Asia/Singapore`, SGT, UTC+8, zero daylight saving adjustments).
+* **Currency & Financial Formatting**:
+  - **Currency Code**: `SGD`.
+  - **Display Prefix**: `S$` (e.g., `S$ 1,500.00` or `S$ 500,000`).
+  - **Number Format**: Standard grouping with comma thousands separator and dot decimal (e.g., `S$ 2,400.00`).
+  - Always use the shared formatters exported from `@insurance-agent/shared` (`formatSgd`, `formatSgDate`, `formatSgDateLong`).
+* **Contact & Identifier Standards**:
+  - **Phone Numbers**: Singapore numbers have 8 digits with `+65` country prefix (e.g., `+65 9123 4567`).
+  - **Postal Codes**: 6-digit numeric Singapore postal codes (`^\d{6}$`).
+
 ---
 
 ## 4. Repository Structure
