@@ -1,0 +1,11 @@
+{
+  "name": "@insurance-agent/config",
+  "version": "0.1.0",
+  "private": true,
+  "main": "index.js",
+  "exports": {
+    "./eslint": "./eslint.js",
+    "./prettier": "./prettier.js",
+    "./tailwind": "./tailwind.js"
+  }
+}

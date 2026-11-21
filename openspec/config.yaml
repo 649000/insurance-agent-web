@@ -1,0 +1,21 @@
+schema: spec-driven
+
+context: |
+  Project: Insurance Portfolio Tracker for Singapore families (insurance-agent-web)
+  Stack: Turborepo + pnpm, Next.js (App Router, Client-facing BaaS ONLY, NO /app/api routes), Supabase PostgreSQL with RLS, Firebase Auth (Client SDK with 2FA), Firebase Functions (Python with uv & Pydantic v2).
+  Strict Directives:
+  - NO NRIC/FIN collection: Under Singapore PDPA, never collect, store, or display NRIC/FIN numbers.
+  - NO Next.js API routes or route handlers: Reads via Supabase client + RLS, mutations via Python Firebase Functions.
+  - Mobile-First design: Touch targets, responsive layout, zero horizontal scroll.
+  - Hermetic testing: Zero live cloud in automated tests (local Supabase Docker + Firebase emulators).
+  - Standard SG Insurance taxonomy: LIFE, HEALTH, CRITICAL_ILLNESS, DISABILITY, PERSONAL_ACCIDENT, SAVINGS_ENDOWMENT, INVESTMENT_LINKED. Insurers: AIA, Great Eastern, Prudential, Singlife, Income Insurance, Manulife, HSBC Life, FWD, Tokio Marine, Raffles Health, etc.
+
+rules:
+  proposal:
+    - Must specify impacted layers (Shared types, Supabase RLS, Python backend, Frontend UI)
+    - Must explicitly verify PDPA compliance (no NRIC/FIN fields)
+  design:
+    - Must follow mobile-first layout principles
+    - Must define RLS policies for multi-tenant and dependent family access
+  tasks:
+    - Must follow execution order: Domain models -> API/Pydantic schemas -> Backend/RLS -> Frontend -> Automated Tests

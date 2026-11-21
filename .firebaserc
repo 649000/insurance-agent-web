@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "default": "insurance-agent-dev",
+    "dev": "insurance-agent-dev",
+    "prod": "insurance-agent-prod"
+  }
+}

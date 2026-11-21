@@ -1,0 +1,139 @@
+# ==============================================================================
+# Insurance Agent Web - .gitignore
+# Tech Stack: Turborepo, pnpm (Node.js 20+ LTS), Next.js App Router,
+#             Python (uv, pytest, ruff), Firebase (Auth, Functions, Storage),
+#             Supabase PostgreSQL, Playwright & Vitest
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# Dependencies & Package Managers
+# ------------------------------------------------------------------------------
+node_modules/
+.pnpm-store/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ------------------------------------------------------------------------------
+# Build Outputs & Monorepo Cache
+# ------------------------------------------------------------------------------
+.turbo/
+dist/
+build/
+out/
+.next/
+*.tsbuildinfo
+
+# ------------------------------------------------------------------------------
+# Python & Virtual Environments (uv, pytest, ruff)
+# ------------------------------------------------------------------------------
+.venv/
+venv/
+env/
+ENV/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+coverage/
+htmlcov/
+*.egg-info/
+*.egg
+.uv/
+
+# ------------------------------------------------------------------------------
+# Testing & Reports (Vitest, Playwright)
+# ------------------------------------------------------------------------------
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+.vitest/
+
+# ------------------------------------------------------------------------------
+# Firebase (Emulators, Deployments & Logs)
+# ------------------------------------------------------------------------------
+.firebase/
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*
+hub-debug.log*
+functions-debug.log*
+database-debug.log*
+pubsub-debug.log*
+hosting-debug.log*
+storage-debug.log*
+
+# ------------------------------------------------------------------------------
+# Supabase Local Development
+# ------------------------------------------------------------------------------
+supabase/.temp/
+supabase/.branches/
+.supabase/
+
+# ------------------------------------------------------------------------------
+# Environment Variables & Sensitive Credentials (AGENTS.md §12.1)
+# ------------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Certificates, service account keys & credentials
+*.pem
+*.key
+*.crt
+*.cer
+*.p12
+*.pfx
+*serviceAccount*.json
+*service-account*.json
+*-credentials.json
+google-services.json
+GoogleService-Info.plist
+
+# ------------------------------------------------------------------------------
+# General Logs & Diagnostics
+# ------------------------------------------------------------------------------
+logs/
+*.log
+
+# ------------------------------------------------------------------------------
+# IDEs & Developer Tools
+# ------------------------------------------------------------------------------
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*~
+#*#
+.#*
+
+# ------------------------------------------------------------------------------
+# Operating System Files
+# ------------------------------------------------------------------------------
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini

@@ -1,0 +1,30 @@
+[project]
+name = "insurance-agent-functions"
+version = "0.1.0"
+description = "Python Firebase Cloud Functions for Insurance Portfolio & Gap Calculations"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "firebase-admin>=6.5.0",
+    "firebase-functions>=0.4.0",
+    "pydantic>=2.6.0",
+    "psycopg[binary]>=3.1.18",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-mock>=3.12.0",
+    "ruff>=0.3.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
