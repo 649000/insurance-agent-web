@@ -6,9 +6,16 @@ on:
   pull_request:
     branches: [main, develop]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  # ============================================================================
+  # 1. Typecheck, Unit Tests & Production Build
+  # ============================================================================
   verify:
-    name: Lint, Typecheck & Hermetic Tests
+    name: Lint, Typecheck, Unit Tests & Build
     runs-on: ubuntu-latest
 
     steps:
@@ -47,3 +54,183 @@ jobs:
           uv venv
           uv pip install -e ".[dev]"
           uv run pytest -v
+
+      - name: Build Web Application (Static Export)
+        run: pnpm build
+        env:
+          NEXT_PUBLIC_USE_FIREBASE_EMULATORS: 'true'
+
+  # ============================================================================
+  # 2. Database Migration Validation & RLS Policy Linting
+  # ============================================================================
+  db-validation:
+    name: Supabase DB Migration & RLS Linting
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Start Local Supabase Stack
+        run: supabase start
+
+      - name: Validate Migrations from Scratch
+        run: supabase db reset
+
+      - name: Lint Database for Security & RLS Policies
+        run: supabase db lint --level error
+
+  # ============================================================================
+  # 3. Static Application Security Testing (SAST)
+  # ============================================================================
+  sast:
+    name: SAST & Dependency Auditing
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9.15.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'pnpm'
+
+      - name: Set up uv & Python
+        uses: astral-sh/setup-uv@v2
+        with:
+          enable-cache: true
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile=false
+
+      - name: Frontend Dependency Vulnerability Audit
+        run: pnpm audit --audit-level=high
+
+      - name: Python Security & Quality Linting (Ruff & Bandit)
+        working-directory: services/functions
+        run: |
+          uv venv
+          uv pip install ruff bandit pip-audit
+          uv run ruff check .
+          uv run bandit -r src -ll
+
+      - name: Semgrep Security Scan
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: >-
+            p/security-audit
+            p/secrets
+            p/owasp-top-ten
+        continue-on-error: true
+
+  # ============================================================================
+  # 4. End-to-End Testing (Playwright)
+  # ============================================================================
+  e2e:
+    name: Playwright E2E Tests (Mobile & Desktop)
+    runs-on: ubuntu-latest
+    needs: verify
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9.15.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile=false
+
+      - name: Build Web Application
+        run: pnpm --filter @insurance-agent/web build
+        env:
+          NEXT_PUBLIC_USE_FIREBASE_EMULATORS: 'true'
+
+      - name: Get Playwright version for cache key
+        id: playwright-version
+        run: |
+          PLAYWRIGHT_VERSION=$(node -e "console.log(require('@playwright/test/package.json').version)")
+          echo "version=$PLAYWRIGHT_VERSION" >> $GITHUB_OUTPUT
+        working-directory: apps/web
+
+      - name: Cache Playwright Browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
+
+      - name: Install Playwright Browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: pnpm --filter @insurance-agent/web exec playwright install --with-deps chromium
+
+      - name: Run E2E Smoke Tests
+        run: pnpm --filter @insurance-agent/web test:e2e
+        env:
+          CI: 'true'
+
+  # ============================================================================
+  # 5. Dynamic Application Security Testing (DAST) - OWASP ZAP Baseline
+  # ============================================================================
+  dast:
+    name: DAST - OWASP ZAP Baseline Scan
+    runs-on: ubuntu-latest
+    needs: verify
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9.15.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile=false
+
+      - name: Build Web Application
+        run: pnpm --filter @insurance-agent/web build
+        env:
+          NEXT_PUBLIC_USE_FIREBASE_EMULATORS: 'true'
+
+      - name: Start Production Web Server in Background
+        run: |
+          pnpm --filter @insurance-agent/web exec serve -s out -l 3000 --no-clipboard &
+          # Wait for server to become responsive
+          npx wait-on http://127.0.0.1:3000 -t 30000
+        working-directory: apps/web
+
+      - name: Run OWASP ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          target: 'http://localhost:3000'
+          fail_action: false
+          allow_issue_writing: false

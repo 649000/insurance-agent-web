@@ -1,0 +1,100 @@
+name: Deploy Non-Prod (SIT)
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-dev
+  cancel-in-progress: false
+
+jobs:
+  # ============================================================================
+  # 1. Supabase Database Migration Push (SIT / Dev Environment)
+  # ============================================================================
+  deploy-database:
+    name: Apply Supabase Migrations (Dev / SIT)
+    runs-on: ubuntu-latest
+    environment: dev
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Link and Push Migrations to Supabase SIT
+        if: env.SUPABASE_ACCESS_TOKEN != '' && env.SUPABASE_DB_PASSWORD != ''
+        run: |
+          supabase link --project-ref "${{ vars.SUPABASE_PROJECT_REF || 'llhzdoqqdndjdrqdzzuc' }}" --password "$SUPABASE_DB_PASSWORD"
+          supabase db push
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+
+  # ============================================================================
+  # 2. Build & Deploy Web Frontend & Cloud Functions to Firebase (Dev / SIT)
+  # ============================================================================
+  deploy-firebase:
+    name: Deploy to Firebase Hosting & Functions (Dev / SIT)
+    runs-on: ubuntu-latest
+    needs: deploy-database
+    environment: dev
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9.15.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'pnpm'
+
+      - name: Set up uv & Python
+        uses: astral-sh/setup-uv@v2
+        with:
+          enable-cache: true
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile=false
+
+      - name: Prepare Python Cloud Functions dependencies
+        working-directory: services/functions
+        run: |
+          uv venv
+          uv pip install -e .
+
+      - name: Build Web Application (SIT Configuration)
+        run: pnpm --filter @insurance-agent/web build
+        env:
+          # SIT Supabase Endpoints (llhzdoqqdndjdrqdzzuc)
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL || 'https://llhzdoqqdndjdrqdzzuc.supabase.co' }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsaHpkb3FxZG5kamRycWR6enVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzgzNzkwNjgsImV4cCI6MjA1Mzk1NTA2OH0.h9T8WzN4I3EUId0-GK_ii6KRiFkYEfvim3dZPPYUvZE' }}
+          # SIT Firebase Client SDK (insurance-agent-e9cbe)
+          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY || 'AIzaSyDKvs5hK_Nq4z-gXBlDJ6Yyi6Rp-AcDu6E' }}
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ vars.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || 'insurance-agent-e9cbe.firebaseapp.com' }}
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ vars.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'insurance-agent-e9cbe' }}
+          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ vars.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'insurance-agent-e9cbe.firebasestorage.app' }}
+          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '376504932459' }}
+          NEXT_PUBLIC_FIREBASE_APP_ID: ${{ vars.NEXT_PUBLIC_FIREBASE_APP_ID || '1:376504932459:web:b58d45e561ef5817b9792e' }}
+          NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: ${{ vars.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || 'G-7KTN6JGTZ8' }}
+          # Disable Emulators for Cloud SIT
+          NEXT_PUBLIC_USE_FIREBASE_EMULATORS: 'false'
+
+      - name: Deploy to Firebase Tools CLI
+        run: |
+          npx firebase-tools deploy --only hosting,storage,functions --project "${{ vars.FIREBASE_PROJECT_ID || 'dev' }}"
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}

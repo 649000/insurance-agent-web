@@ -1,7 +1,9 @@
 {
   "projects": {
-    "default": "insurance-agent-dev",
-    "dev": "insurance-agent-dev",
+    "default": "insurance-agent-e9cbe",
+    "dev": "insurance-agent-e9cbe",
     "prod": "insurance-agent-prod"
-  }
+  },
+  "targets": {},
+  "etags": {}
 }
