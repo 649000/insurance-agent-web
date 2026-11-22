@@ -94,9 +94,17 @@ jobs:
           # Disable Emulators for Cloud SIT
           NEXT_PUBLIC_USE_FIREBASE_EMULATORS: 'false'
 
-      - name: Deploy to Firebase Tools CLI
+      - name: Deploy Firebase Hosting & Storage
         run: |
-          npx firebase-tools deploy --only hosting,storage,functions --project "${{ vars.FIREBASE_PROJECT_ID || 'insurance-agent-e9cbe' }}" --non-interactive --token "$FIREBASE_TOKEN"
+          npx firebase-tools deploy --only hosting,storage --project "${{ vars.FIREBASE_PROJECT_ID || 'insurance-agent-e9cbe' }}" --non-interactive --token "$FIREBASE_TOKEN"
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+      - name: Deploy Firebase Cloud Functions
+        continue-on-error: true
+        run: |
+          npx firebase-tools deploy --only functions --project "${{ vars.FIREBASE_PROJECT_ID || 'insurance-agent-e9cbe' }}" --non-interactive --token "$FIREBASE_TOKEN"
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
