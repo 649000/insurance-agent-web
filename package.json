@@ -16,6 +16,11 @@
     "turbo": "^2.3.3",
     "typescript": "^5.7.2"
   },
+  "pnpm": {
+    "overrides": {
+      "@grpc/grpc-js": "^1.13.6"
+    }
+  },
   "engines": {
     "node": ">=20.0.0"
   }
