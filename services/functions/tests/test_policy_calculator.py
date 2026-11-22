@@ -1,5 +1,5 @@
-import pytest
 from domain.policy_calculator import calculate_coverage_gap
+
 
 def test_calculate_coverage_gap_with_empty_policies():
     result = calculate_coverage_gap(
@@ -18,6 +18,7 @@ def test_calculate_coverage_gap_with_empty_policies():
     assert life_item.recommended_coverage == 540000.0
     assert life_item.gap_amount == 540000.0
     assert not life_item.is_adequate
+
 
 def test_calculate_coverage_gap_with_active_policies():
     policies = [
@@ -40,7 +41,7 @@ def test_calculate_coverage_gap_with_active_policies():
         {
             "id": "3",
             "category": "LIFE",
-            "status": "LAPSED", # Should be excluded
+            "status": "LAPSED",  # Should be excluded
             "sum_assured": 500000.0,
             "premium_amount": 1500.0,
             "premium_frequency": "ANNUALLY",

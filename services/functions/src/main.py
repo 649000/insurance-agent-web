@@ -1,7 +1,8 @@
 from firebase_functions import https_fn, options
+
 from core.config import initialize_firebase
-from schemas.gap_analysis import CoverageGapRequest
 from domain.policy_calculator import calculate_coverage_gap
+from schemas.gap_analysis import CoverageGapRequest
 
 # Initialize Firebase Admin
 initialize_firebase()
@@ -17,6 +18,7 @@ CALLABLE_OPTIONS = options.CallableOptions(
         cors_methods=["POST", "OPTIONS"],
     ),
 )
+
 
 @https_fn.on_call(options=CALLABLE_OPTIONS)
 def analyze_coverage_gap(req: https_fn.CallableRequest) -> dict:
@@ -37,7 +39,7 @@ def analyze_coverage_gap(req: https_fn.CallableRequest) -> dict:
         raise https_fn.HttpsError(
             code=https_fn.FunctionsErrorCode.INVALID_ARGUMENT,
             message=f"Invalid request data: {str(e)}",
-        )
+        ) from e
 
     # In production, queries Supabase using pooler with req.auth.uid & profile_id
     # Here we invoke the pure calculation domain logic

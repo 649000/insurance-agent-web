@@ -80,6 +80,7 @@ ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.policies ENABLE ROW LEVEL SECURITY;
 
 -- Profiles RLS Policies
+DROP POLICY IF EXISTS "Users can read own and dependent profiles" ON public.profiles;
 CREATE POLICY "Users can read own and dependent profiles"
   ON public.profiles FOR SELECT
   USING (
@@ -87,6 +88,7 @@ CREATE POLICY "Users can read own and dependent profiles"
     parent_id = public.firebase_uid()
   );
 
+DROP POLICY IF EXISTS "Users can insert own and dependent profiles" ON public.profiles;
 CREATE POLICY "Users can insert own and dependent profiles"
   ON public.profiles FOR INSERT
   WITH CHECK (
@@ -94,6 +96,7 @@ CREATE POLICY "Users can insert own and dependent profiles"
     parent_id = public.firebase_uid()
   );
 
+DROP POLICY IF EXISTS "Users can update own and dependent profiles" ON public.profiles;
 CREATE POLICY "Users can update own and dependent profiles"
   ON public.profiles FOR UPDATE
   USING (
@@ -101,6 +104,7 @@ CREATE POLICY "Users can update own and dependent profiles"
     parent_id = public.firebase_uid()
   );
 
+DROP POLICY IF EXISTS "Users can delete own and dependent profiles" ON public.profiles;
 CREATE POLICY "Users can delete own and dependent profiles"
   ON public.profiles FOR DELETE
   USING (
@@ -109,6 +113,7 @@ CREATE POLICY "Users can delete own and dependent profiles"
   );
 
 -- Policies RLS Policies
+DROP POLICY IF EXISTS "Users can read own and dependent policies" ON public.policies;
 CREATE POLICY "Users can read own and dependent policies"
   ON public.policies FOR SELECT
   USING (
@@ -118,18 +123,21 @@ CREATE POLICY "Users can read own and dependent policies"
     )
   );
 
+DROP POLICY IF EXISTS "Users can insert own policies" ON public.policies;
 CREATE POLICY "Users can insert own policies"
   ON public.policies FOR INSERT
   WITH CHECK (
     user_id = public.firebase_uid()
   );
 
+DROP POLICY IF EXISTS "Users can update own policies" ON public.policies;
 CREATE POLICY "Users can update own policies"
   ON public.policies FOR UPDATE
   USING (
     user_id = public.firebase_uid()
   );
 
+DROP POLICY IF EXISTS "Users can delete own policies" ON public.policies;
 CREATE POLICY "Users can delete own policies"
   ON public.policies FOR DELETE
   USING (
