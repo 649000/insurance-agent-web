@@ -23,8 +23,15 @@ Every agent working on this codebase must adhere to the following architectural 
    - Do not introduce abstractions, services, libraries, or infrastructure without a clear, measurable benefit.
    - Use existing `shadcn/ui` components rather than creating custom equivalents when a suitable component exists.
    - Prefer composition of small, focused components over large monolithic components.
-4. **Strict Separation of Dev & Prod Environments**:
-   - Distinct Firebase projects (`insurance-agent-dev`, `insurance-agent-prod`).
+4. **Strict Separation of Dev & Prod Environments (Gitflow)**:
+   - **Branch-to-Environment Lifecycle**:
+     - `feature/*` branches: PRs target `develop`. Verified hermetically by `ci.yml` (Docker DB + emulators, zero live cloud).
+     - `develop` branch: Integration branch. Pushes/merges automatically deploy to the `dev` environment (Non-Prod / SIT: Firebase `insurance-agent-e9cbe`, Supabase `llhzdoqqdndjdrqdzzuc`).
+     - `main` branch: Production branch. Pushes/merges deploy to the `prod` environment ONLY after passing an explicit GitHub Environment Approval Gate (required reviewer).
+   - **Automated vs Local Database Operations**:
+     - **Local Dev & CI**: Runs 100% offline via local Docker container (`postgres:postgres`). Zero cloud credentials required.
+     - **Remote Deployments (Dev & Prod)**: All remote migrations MUST be executed exclusively by GitHub Actions (`supabase db push`) via environment secrets. Engineers shall NEVER execute ad-hoc DDL migrations against remote dev or prod databases from local machines.
+   - Distinct Firebase projects (`insurance-agent-e9cbe` for dev, `insurance-agent-prod` for prod).
    - Distinct Supabase instances (`dev`, `prod`).
    - Configuration is injected via GitHub Actions Environments and environment variables. Never commit secrets or hardcode project IDs.
 5. **Zero Live Cloud in Automated Tests**:
@@ -282,6 +289,12 @@ All non-trivial work goes through OpenSpec. The specification is the single sour
 * **Python Classes & Pydantic Models**: `PascalCase` (e.g., `PolicyIn`, `PolicyOut`, `CoverageCalculator`).
 * **Database Tables & Columns**: `snake_case` (e.g., `policy_records`, `profile_id`, `sum_assured`).
 
+### 8.7 Hosting & Static Export Architecture
+* Because Next.js serves strictly as a client-side SPA with zero server routes:
+  - `apps/web/next.config.mjs` MUST configure `output: 'export'` with `distDir: 'out'`.
+  - `firebase.json` hosting target MUST point to `apps/web/out` with SPA rewrite rules (`"source": "**", "destination": "/index.html"`).
+  - Security headers (CSP, X-Content-Type-Options, Frame-Options) MUST be defined in `firebase.json` under `hosting.headers` (since static exports do not process Next.js server `headers()`).
+
 ---
 
 ## 9. Dependency Management Policy
@@ -309,6 +322,17 @@ Before adding any dependency:
 3. **Deployment**:
    - `develop` branch merges trigger `supabase db push` to the Development DB.
    - `main` branch merges trigger an approval gate before running `supabase db push` to the Production DB.
+
+4. **GitHub Actions Secret & Variable Standards**:
+   - All remote deployment credentials must be stored as **GitHub Environment Secrets** under their respective environment (`dev` or `prod`), NEVER as global repository secrets.
+   - **Canonical Secret Names** (identical across both `dev` and `prod`):
+     - `SUPABASE_ACCESS_TOKEN`: Supabase Personal Access Token for CLI authentication.
+     - `SUPABASE_DB_PASSWORD`: PostgreSQL database password for that environment's Supabase instance.
+     - `FIREBASE_TOKEN` (or `FIREBASE_SERVICE_ACCOUNT`): Deployment credential for Firebase Hosting & Functions.
+   - **Canonical Variable Names** (non-sensitive):
+     - `SUPABASE_PROJECT_REF`: The target Supabase project ID (e.g., `llhzdoqqdndjdrqdzzuc` for dev).
+     - `FIREBASE_PROJECT_ID`: The target Firebase project ID (e.g., `insurance-agent-e9cbe` for dev).
+     - `NEXT_PUBLIC_SUPABASE_URL`: The Supabase project URL.
 
 ---
 
@@ -345,6 +369,10 @@ Security is a non-negotiable, first-class requirement across this repository.
 
 ### 12.1 Universal Security Directives
 1. **Never commit secrets**: No `.env` files with real keys, API keys, service account JSON files, or certificates in git history.
+   - **Environment File Roles in Monorepo**:
+     - `.env.example` (Root): Strictly generic placeholders only (`mock-api-key`, `eyJh...`). Must never contain live project IDs or client keys.
+     - `apps/web/.env.local`: Local developer configuration only (ignored by git).
+     - CI/CD Builds: Environment variables are injected exclusively by GitHub Actions runner environment contexts at build time.
 2. **Never hard-code credentials**: Inject all credentials via GitHub Actions Secrets or environment variables.
 3. **Never expose server-side secrets to the browser**:
    - `NEXT_PUBLIC_*` must **only** contain public client keys (Firebase Client API Key, Supabase Anon Key).
