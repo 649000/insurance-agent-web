@@ -125,7 +125,7 @@ jobs:
           uv venv
           uv pip install ruff bandit pip-audit
           uv run ruff check .
-          uv run bandit -r src -ll
+          uv run bandit -r src main.py -ll
 
       - name: Semgrep Security Scan
         uses: semgrep/semgrep-action@v1
