@@ -1,8 +1,16 @@
+import os
+import sys
+
 from firebase_functions import https_fn, options
 
-from src.core.config import initialize_firebase
-from src.domain.policy_calculator import calculate_coverage_gap
-from src.schemas.gap_analysis import CoverageGapRequest
+# Ensure src directory is in sys.path for both local testing and GCP Cloud Run runtime
+SRC_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "src"))
+if SRC_DIR not in sys.path:
+    sys.path.insert(0, SRC_DIR)
+
+from src.core.config import initialize_firebase  # noqa: E402
+from src.domain.policy_calculator import calculate_coverage_gap  # noqa: E402
+from src.schemas.gap_analysis import CoverageGapRequest  # noqa: E402
 
 # Initialize Firebase Admin
 initialize_firebase()
